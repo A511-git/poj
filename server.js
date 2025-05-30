@@ -14,6 +14,46 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
+
+const axios = require('axios');
+
+app.get('/api/genres', async (req, res) => {
+    const auth = Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64');
+
+    try {
+        // Get token first
+        const tokenResponse = await axios.post(
+            'https://accounts.spotify.com/api/token',
+            new URLSearchParams({ grant_type: 'client_credentials' }),
+            {
+                headers: {
+                    'Authorization': `Basic ${auth}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+
+        // Then get genres
+        const genreResponse = await axios.get(
+            'https://api.spotify.com/v1/recommendations/available-genre-seeds',
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        res.json(genreResponse.data);
+    } catch (err) {
+        console.error('Failed to fetch genres:', err.message);
+        res.status(500).json({ error: 'Could not fetch Spotify genres' });
+    }
+});
+
+
+
 // Spotify token route
 app.get('/api/token', async (req, res) => {
   const auth = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
