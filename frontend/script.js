@@ -1,4 +1,5 @@
-const backendURL = 'http://localhost:3000'; // Change to your backend URL if deployed
+const backendURL = 'https://weather-music-backend.onrender.com';
+
 
 
 
