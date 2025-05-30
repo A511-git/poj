@@ -51,23 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-async function fetchAndLogSpotifyGenres() {
+let validGenres = [];
+async function fetchValidGenres() {
     try {
-        const tokenResponse = await fetch(`${backendURL}/api/token`);
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
-
-        const genreResponse = await fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-
-        const genreData = await genreResponse.json();
-        console.log('🎵 Spotify Available Genres:', genreData.genres);
-
-    } catch (error) {
-        console.error('Failed to fetch Spotify genre list:', error);
+        const response = await fetch(`${backendURL}/api/genres`);
+        const data = await response.json();
+        validGenres = data.genres;
+        console.log('✅ Valid Spotify genres loaded:', validGenres);
+    } catch (err) {
+        console.error('Failed to load genres:', err);
     }
 }
 
